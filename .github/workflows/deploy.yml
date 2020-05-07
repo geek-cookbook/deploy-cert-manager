@@ -45,7 +45,7 @@ jobs:
         # Insert values.yaml overrides here, indented as you would in a regular YAML file
         values: |
           installCRDs: true
-            extraArgs:
-              - --enable-certificate-owner-ref=true
-              - --namespace=letsencrypt-wildcard-cert
+          extraArgs:
+            - --enable-certificate-owner-ref=true
+            - --namespace=letsencrypt-wildcard-cert
         
