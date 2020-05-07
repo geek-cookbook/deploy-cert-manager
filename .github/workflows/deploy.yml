@@ -1,17 +1,34 @@
 name: Deploy helm chart to Kubernetes
 
+# Trigger either on a push to master, on when the repo is _starred_ 
+# (the if statement in the deploy job ensures only the repo owner can do this)
 on:
   push:
     branches:
       - master
+  watch:
+    types: [started]
 
 env:
   CHART_NAME: 'cert-manager'
   CHART_REPO: 'https://charts.jetstack.io'
+  KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'  
 
 jobs:
+  # Since we're allowing the workflow to be triggered with a star, only trigger if the repo owner performed
+  # the action which triggered us (https://stackoverflow.com/questions/58933155/manual-workflow-triggers-in-github-actions/58965362#58965362)
+  authorize: 
+    runs-on: ubuntu-latest
 
-  build:
+    steps:
+    - uses: octokit/request-action@v2.0.0
+      with:
+        route: GET /repos/:repository/collaborators/${{ github.actor }}
+        repository: ${{ github.repository }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
     name: Deploy chart
     runs-on: ubuntu-latest
     steps:
@@ -28,10 +45,7 @@ jobs:
         # Insert values.yaml overrides here, indented as you would in a regular YAML file
         values: |
           installCRDs: true
-        #   image:
-        #     repository:   <whatever>/<whatever>:<tag>
-
-      # Deployment will use the kubeconfig secret you created in the repo
-      env:
-        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+            extraArgs:
+              - --enable-certificate-owner-ref=true
+              - --namespace=letsencrypt-wildcard-cert
         
