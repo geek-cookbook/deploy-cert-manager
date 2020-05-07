@@ -7,7 +7,10 @@ metadata:
   name: helm-deploy-cert-manager
 rules:
   - apiGroups: ["", "rbac.authorization.k8s.io"]
-    resources: ["clusterroles","clusterrolebindings"]
+    resources: ["clusterroles","clusterrolebindings","roles","rolebindings"]
+    verbs: ["*"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations","validatingwebhookconfigurations"]
     verbs: ["*"]
 ---
 kind: ClusterRoleBinding

@@ -27,6 +27,7 @@ jobs:
 
         # Insert values.yaml overrides here, indented as you would in a regular YAML file
         values: |
+          installCRDs: true
         #   image:
         #     repository:   <whatever>/<whatever>:<tag>
 
